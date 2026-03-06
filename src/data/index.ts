@@ -121,11 +121,11 @@ export const skills: Skill[] = [
   },
   {
     category: 'Tools',
-    items: ['VSCode', 'PyCharm', 'Git', 'Figma', 'Canva', 'Linux', 'Docker'],
+    items: ['VSCode', 'PyCharm', 'Git', 'Figma', 'Canva', 'Linux', 'Docker', 'Vercel', 'Netlify', 'Postman', 'Insomnia', 'GitHub', 'GitLab' ],
   },
   {
     category: 'AI / ML',
-    items: ['Prompt Engineering', 'OpenAI API', 'Anthropic API', 'LangChain'],
+    items: ['Prompt Engineering', 'OpenAI API', 'Anthropic API', 'LangChain','YOLOv8', 'TensorFlow.js', 'Google AI Studio', 'Ollama', 'Gemma 2b', 'Ollama', 'Gemma 3b','Roboflow','WEBGL','Google Colab','CUDA','Ultralytics'],
   },
   {
     category: 'Other',

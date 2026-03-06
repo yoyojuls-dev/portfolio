@@ -1,6 +1,8 @@
+// Skills.tsx
 import { useState, useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
 import { skills } from '../data'
+import RevealOnScroll from './RevealOnScroll'
 
 const skillRatings: Record<string, Record<string, number>> = {
   Languages: {
@@ -14,10 +16,10 @@ const skillRatings: Record<string, Record<string, number>> = {
     MySQL: 75, MongoDB: 80, SQLite: 70, Firebase: 75, 'Google Console Databases': 80,
   },
   Tools: {
-    VSCode: 95, PyCharm: 70, Git: 82, Figma: 68, Canva: 72, Linux: 65, Docker: 60,
+    VSCode: 95, PyCharm: 70, Git: 82, Figma: 68, Canva: 72, Linux: 65, Docker: 60, 'Vercel': 78, 'Netlify': 75, 'Postman': 80, 'Insomnia': 78, GitHub: 85, GitLab: 80, 
   },
   'AI / ML': {
-    'Prompt Engineering': 90, 'OpenAI API': 82, 'Anthropic API': 80, LangChain: 65,
+    'Prompt Engineering': 90, 'OpenAI API': 82, 'Anthropic API': 80, LangChain: 65, 'Yolov8': 70, 'TensorFlow.js': 60, 'Google AI Studio': 75, Ollama: 68, 'Gemma 2b': 60, 'Gemma 3b': 55,'Roboflow': 50,'WEBGL': 45,'Google Colab': 78,'CUDA': 40,'Ultralytics': 65,
   },
   Other: {
     HTML: 92, CSS: 85, REST: 80, Jinja: 65, EJS: 68, SCSS: 75,
@@ -244,78 +246,76 @@ export default function Skills() {
       <div className="absolute right-0 bottom-0 w-64 h-64 dot-grid opacity-15 pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6">
-        <div className="mb-14">
-          <div className="font-mono text-accent text-xs uppercase tracking-widest mb-3">
-            # skills
+
+        <RevealOnScroll>
+          <div className="mb-14">
+            <div className="font-mono text-accent text-xs uppercase tracking-widest mb-3">
+              # skills
+            </div>
+            <div className="w-16 h-px bg-gradient-to-r from-accent to-transparent" />
+            <p className="font-mono text-xs text-muted mt-3">
+              click any category to see ratings ↗
+            </p>
           </div>
-          <div className="w-16 h-px bg-gradient-to-r from-accent to-transparent" />
-          <p className="font-mono text-xs text-muted mt-3">
-            click any category to see ratings ↗
-          </p>
-        </div>
+        </RevealOnScroll>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {skills.map((skill, i) => {
             const color = categoryColors[skill.category] || '#9d5cff'
             const icon = categoryIcons[skill.category] || '◆'
+
             return (
-              <button
-                key={skill.category}
-                onClick={() => setOpenCategory(skill.category)}
-                className="group relative p-6 rounded-xl border text-left w-full card-hover cursor-pointer"
-                style={{
-                  background: 'linear-gradient(135deg, #1a1a24 0%, #13131a 100%)',
-                  borderColor: 'rgba(42,42,58,0.4)',
-                  animationDelay: `${i * 0.08}s`,
-                }}
-              >
-                {/* Header */}
-                <div className="flex items-center gap-3 mb-5">
-                  <span className="font-mono text-base" style={{ color }}>{icon}</span>
-                  <h3 className="font-display font-semibold text-sm text-text">
-                    {skill.category}
-                  </h3>
-                  <div className="ml-auto flex items-center gap-2">
-                    <span
-                      className="font-mono text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                      style={{ color }}
-                    >
-                      view →
-                    </span>
-                    <div className="w-8 h-px" style={{ background: color + '44' }} />
+              <RevealOnScroll key={skill.category} delay={i * 80}>
+                <button
+                  onClick={() => setOpenCategory(skill.category)}
+                  className="group relative p-6 rounded-xl border text-left w-full card-hover cursor-pointer"
+                  style={{
+                    background: 'linear-gradient(135deg, #1a1a24 0%, #13131a 100%)',
+                    borderColor: 'rgba(42,42,58,0.4)',
+                  }}
+                >
+                  <div className="flex items-center gap-3 mb-5">
+                    <span className="font-mono text-base" style={{ color }}>{icon}</span>
+                    <h3 className="font-display font-semibold text-sm text-text">
+                      {skill.category}
+                    </h3>
+                    <div className="ml-auto flex items-center gap-2">
+                      <span
+                        className="font-mono text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                        style={{ color }}
+                      >
+                        view →
+                      </span>
+                      <div className="w-8 h-px" style={{ background: color + '44' }} />
+                    </div>
                   </div>
-                </div>
 
-                {/* Items */}
-                <div className="flex flex-wrap gap-2">
-                  {skill.items.map(item => (
-                    <span
-                      key={item}
-                      className="font-mono text-xs px-2.5 py-1 rounded-sm border border-border/50 text-muted"
-                      style={{ background: 'rgba(13,13,18,0.6)' }}
-                    >
-                      {item}
-                    </span>
-                  ))}
-                </div>
+                  <div className="flex flex-wrap gap-2">
+                    {skill.items.map(item => (
+                      <span
+                        key={item}
+                        className="font-mono text-xs px-2.5 py-1 rounded-sm border border-border/50 text-muted"
+                        style={{ background: 'rgba(13,13,18,0.6)' }}
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
 
-                {/* Bottom accent line on hover */}
-                <div
-                  className="absolute bottom-0 left-0 h-px w-0 group-hover:w-full transition-all duration-500 rounded-b-xl"
-                  style={{ background: `linear-gradient(90deg, ${color}, transparent)` }}
-                />
-
-                {/* Inner border glow on hover */}
-                <div
-                  className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                  style={{ boxShadow: `inset 0 0 0 1px ${color}28` }}
-                />
-              </button>
+                  <div
+                    className="absolute bottom-0 left-0 h-px w-0 group-hover:w-full transition-all duration-500 rounded-b-xl"
+                    style={{ background: `linear-gradient(90deg, ${color}, transparent)` }}
+                  />
+                  <div
+                    className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                    style={{ boxShadow: `inset 0 0 0 1px ${color}28` }}
+                  />
+                </button>
+              </RevealOnScroll>
             )
           })}
         </div>
 
-        {/* Decoration */}
         <div className="hidden lg:flex items-center justify-center mt-16 gap-6 opacity-20">
           {[16, 24, 12, 20, 8].map((size, idx) => (
             <div

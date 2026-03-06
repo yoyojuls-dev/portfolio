@@ -1,7 +1,10 @@
+// Projects.tsx
 import { useState, useEffect, useRef } from 'react'
 import { ExternalLink, Github, ArrowRight, X, Tag, Calendar, Layers } from 'lucide-react'
 import { projects } from '../data'
 import { Project } from '../types'
+import RevealOnScroll from './RevealOnScroll'
+
 
 // ─── Tag color map ────────────────────────────────────────────────────────────
 const tagColors: Record<string, { text: string; bg: string; border: string }> = {
@@ -267,6 +270,8 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
   )
 }
 
+
+
 // ─── Project Card ─────────────────────────────────────────────────────────────
 function ProjectCard({ project, index, onClick }: { project: Project; index: number; onClick: () => void }) {
   return (
@@ -378,46 +383,48 @@ export default function Projects() {
       <div className="absolute left-0 top-0 w-48 h-48 dot-grid opacity-20 pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6">
-        <div className="flex items-end justify-between mb-14">
-          <div>
-            <div className="font-mono text-accent text-xs uppercase tracking-widest mb-3">
-              # projects
+
+        <RevealOnScroll>
+          <div className="flex items-end justify-between mb-14">
+            <div>
+              <div className="font-mono text-accent text-xs uppercase tracking-widest mb-3">
+                # projects
+              </div>
+              <div className="w-24 h-px bg-gradient-to-r from-accent to-transparent" />
+              <p className="font-mono text-xs text-muted mt-3">
+                click any project to expand ↗
+              </p>
             </div>
-            <div className="w-24 h-px bg-gradient-to-r from-accent to-transparent" />
-            <p className="font-mono text-xs text-muted mt-3">
-              click any project to expand ↗
-            </p>
+            <button
+              onClick={() => setShowAll(!showAll)}
+              className="flex items-center gap-2 font-mono text-sm text-muted hover:text-accent transition-colors group"
+            >
+              {showAll ? 'Show less' : 'View all'}
+              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </button>
           </div>
-          <button
-            onClick={() => setShowAll(!showAll)}
-            className="flex items-center gap-2 font-mono text-sm text-muted hover:text-accent transition-colors group"
-          >
-            {showAll ? 'Show less' : 'View all'}
-            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-          </button>
-        </div>
+        </RevealOnScroll>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {displayed.map((project, i) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              index={i}
-              onClick={() => setSelectedProject(project)}
-            />
+            <RevealOnScroll key={project.id} delay={i * 100}>
+              <ProjectCard project={project} index={i} onClick={() => setSelectedProject(project)} />
+            </RevealOnScroll>
           ))}
         </div>
 
         {!showAll && rest.length > 0 && (
-          <div className="text-center mt-10">
-            <button
-              onClick={() => setShowAll(true)}
-              className="inline-flex items-center gap-2 px-6 py-2.5 border border-border/50 text-muted font-mono text-sm
-                         hover:border-accent/50 hover:text-accent transition-all duration-300 rounded-sm"
-            >
-              +{rest.length} more projects
-            </button>
-          </div>
+          <RevealOnScroll>
+            <div className="text-center mt-10">
+              <button
+                onClick={() => setShowAll(true)}
+                className="inline-flex items-center gap-2 px-6 py-2.5 border border-border/50 text-muted font-mono text-sm
+                           hover:border-accent/50 hover:text-accent transition-all duration-300 rounded-sm"
+              >
+                +{rest.length} more projects
+              </button>
+            </div>
+          </RevealOnScroll>
         )}
       </div>
 
