@@ -8,7 +8,7 @@ export default function About() {
   ]
 
   return (
-    <section id="about" className="py-24 relative">
+    <section id="about" className="py-2 relative">
       <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-32 bg-gradient-to-b from-transparent via-accent to-transparent" />
 
       <div className="max-w-6xl mx-auto px-6">

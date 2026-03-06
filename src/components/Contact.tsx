@@ -40,7 +40,7 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="py-24 relative">
+    <section id="contact" className="py-2 relative">
       <div className="absolute right-0 top-0 w-80 h-80 dot-grid opacity-15 pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6">

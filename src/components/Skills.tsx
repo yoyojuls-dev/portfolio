@@ -242,7 +242,7 @@ export default function Skills() {
   const [openCategory, setOpenCategory] = useState<string | null>(null)
 
   return (
-    <section id="skills" className="py-24 relative">
+    <section id="skills" className="py-2 relative">
       <div className="absolute right-0 bottom-0 w-64 h-64 dot-grid opacity-15 pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6">

@@ -379,7 +379,7 @@ export default function Projects() {
   const displayed = showAll ? projects : featured
 
   return (
-    <section id="projects" className="py-24 relative">
+    <section id="projects" className="py-2 relative">
       <div className="absolute left-0 top-0 w-48 h-48 dot-grid opacity-20 pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-6">
