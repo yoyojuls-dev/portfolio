@@ -16,10 +16,14 @@ const skillRatings: Record<string, Record<string, number>> = {
     MySQL: 75, MongoDB: 80, SQLite: 70, Firebase: 75, 'Google Console Databases': 80,
   },
   Tools: {
-    VSCode: 95, PyCharm: 70, Git: 82, Figma: 68, Canva: 72, Linux: 65, Docker: 60, 'Vercel': 78, 'Netlify': 75, 'Postman': 80, 'Insomnia': 78, GitHub: 85, GitLab: 80, 
+    VSCode: 95, PyCharm: 70, Git: 82, Figma: 68, Canva: 72, Linux: 65, Docker: 60,
+    Vercel: 78, Netlify: 75, Postman: 80, Insomnia: 78, GitHub: 85, GitLab: 80,
   },
   'AI / ML': {
-    'Prompt Engineering': 90, 'OpenAI API': 82, 'Anthropic API': 80, LangChain: 65, 'Yolov8': 70, 'TensorFlow.js': 60, 'Google AI Studio': 75, Ollama: 68, 'Gemma 2b': 60, 'Gemma 3b': 55,'Roboflow': 50,'WEBGL': 45,'Google Colab': 78,'CUDA': 40,'Ultralytics': 65,
+    'Prompt Engineering': 90, 'OpenAI API': 82, 'Anthropic API': 80, LangChain: 65,
+    Yolov8: 70, 'TensorFlow.js': 60, 'Google AI Studio': 75, Ollama: 68,
+    'Gemma 2b': 60, 'Gemma 3b': 55, Roboflow: 50, WEBGL: 45,
+    'Google Colab': 78, CUDA: 40, Ultralytics: 65,
   },
   Other: {
     HTML: 92, CSS: 85, REST: 80, Jinja: 65, EJS: 68, SCSS: 75,
@@ -59,7 +63,6 @@ function FallingBoxes({ color }: { color: string }) {
     if (!canvas) return
     const ctx = canvas.getContext('2d')
     if (!ctx) return
-
     const W = canvas.offsetWidth
     const H = canvas.offsetHeight
     canvas.width = W
@@ -145,12 +148,8 @@ function SkillModal({ category, onClose }: ModalProps) {
         }}
         onClick={e => e.stopPropagation()}
       >
-        {/* Falling boxes canvas — behind content */}
         <FallingBoxes color={color} />
-
-        {/* Content */}
         <div className="relative z-10 p-7 overflow-y-auto" style={{ maxHeight: '88vh' }}>
-          {/* Header */}
           <div className="flex items-center justify-between mb-7">
             <div className="flex items-center gap-3">
               <div
@@ -175,7 +174,6 @@ function SkillModal({ category, onClose }: ModalProps) {
             </button>
           </div>
 
-          {/* Skill bars */}
           <div className="space-y-5">
             {Object.entries(ratings)
               .sort((a, b) => b[1] - a[1])
@@ -186,24 +184,14 @@ function SkillModal({ category, onClose }: ModalProps) {
                     <div className="flex items-center gap-2">
                       <span
                         className="font-mono text-xs px-2 py-0.5 rounded-sm"
-                        style={{
-                          color,
-                          background: color + '14',
-                          border: `1px solid ${color}28`,
-                        }}
+                        style={{ color, background: color + '14', border: `1px solid ${color}28` }}
                       >
                         {getRatingLabel(rating)}
                       </span>
-                      <span className="font-mono text-xs text-muted w-8 text-right">
-                        {rating}%
-                      </span>
+                      <span className="font-mono text-xs text-muted w-8 text-right">{rating}%</span>
                     </div>
                   </div>
-                  {/* Bar track */}
-                  <div
-                    className="h-1.5 rounded-full overflow-hidden"
-                    style={{ background: 'rgba(255,255,255,0.06)' }}
-                  >
+                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
                     <div
                       className="h-full rounded-full"
                       style={{
@@ -218,7 +206,6 @@ function SkillModal({ category, onClose }: ModalProps) {
               ))}
           </div>
 
-          {/* Legend */}
           <div className="mt-7 pt-5 border-t flex flex-wrap gap-3" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
             {[
               { label: 'Expert', min: 90 },
@@ -272,13 +259,13 @@ export default function Skills() {
                   style={{
                     background: 'linear-gradient(135deg, #1a1a24 0%, #13131a 100%)',
                     borderColor: 'rgba(42,42,58,0.4)',
+                    height: '160px',
                   }}
                 >
-                  <div className="flex items-center gap-3 mb-5">
+                  {/* Header */}
+                  <div className="flex items-center gap-3 mb-4">
                     <span className="font-mono text-base" style={{ color }}>{icon}</span>
-                    <h3 className="font-display font-semibold text-sm text-text">
-                      {skill.category}
-                    </h3>
+                    <h3 className="font-display font-semibold text-sm text-text">{skill.category}</h3>
                     <div className="ml-auto flex items-center gap-2">
                       <span
                         className="font-mono text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200"
@@ -290,22 +277,32 @@ export default function Skills() {
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap gap-2">
-                    {skill.items.map(item => (
-                      <span
-                        key={item}
-                        className="font-mono text-xs px-2.5 py-1 rounded-sm border border-border/50 text-muted"
-                        style={{ background: 'rgba(13,13,18,0.6)' }}
-                      >
-                        {item}
-                      </span>
-                    ))}
+                  {/* Items with overflow fade */}
+                  <div className="relative overflow-hidden" style={{ maxHeight: '72px' }}>
+                    <div className="flex flex-wrap gap-2">
+                      {skill.items.map(item => (
+                        <span
+                          key={item}
+                          className="font-mono text-xs px-2.5 py-1 rounded-sm border border-border/50 text-muted whitespace-nowrap"
+                          style={{ background: 'rgba(13,13,18,0.6)' }}
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                    {/* Fade gradient at bottom */}
+                    <div
+                      className="absolute bottom-0 left-0 right-0 h-8 pointer-events-none"
+                      style={{ background: 'linear-gradient(to bottom, transparent, #13131a)' }}
+                    />
                   </div>
 
+                  {/* Bottom accent line on hover */}
                   <div
                     className="absolute bottom-0 left-0 h-px w-0 group-hover:w-full transition-all duration-500 rounded-b-xl"
                     style={{ background: `linear-gradient(90deg, ${color}, transparent)` }}
                   />
+                  {/* Inner border glow on hover */}
                   <div
                     className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
                     style={{ boxShadow: `inset 0 0 0 1px ${color}28` }}
@@ -328,10 +325,7 @@ export default function Skills() {
       </div>
 
       {openCategory && (
-        <SkillModal
-          category={openCategory}
-          onClose={() => setOpenCategory(null)}
-        />
+        <SkillModal category={openCategory} onClose={() => setOpenCategory(null)} />
       )}
     </section>
   )
