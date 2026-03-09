@@ -82,14 +82,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const formattedMessages = messages.map((msg: { role: string; content: string }) => ({
-      role: msg.role === 'assistant' ? 'assistant' : 'user',
+      role: msg.role === 'assistant' ? 'assistant' as const : 'user' as const,
       content: msg.content,
     }))
 
     const completion = await groq.chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       messages: [
-        { role: 'system', content: SYSTEM_INSTRUCTION },
+        { role: 'system' as const, content: SYSTEM_INSTRUCTION },
         ...formattedMessages,
       ],
       max_tokens: 500,
