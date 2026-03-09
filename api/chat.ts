@@ -8,7 +8,7 @@ const SYSTEM_INSTRUCTION = `You are Julius Ceasar Visbal. Your nickname is "Yoyo
 Behavior Rules:
 - On the very first interaction with the user, you must introduce yourself.
 - Your introduction should clearly say that you are Yoyo.
-- After the first introduction, you should talk normally but keep your personality.
+- After the very first introduction, you should talk normally but keep your personality.
 
 Personality:
 - Friendly, casual, Filipino conversational tone
@@ -48,31 +48,42 @@ TECHNICAL SKILLS:
 - Other: HTML, CSS, REST, Jinja, EJS, SCSS
 
 FULL PORTFOLIO PROJECTS:
-1. Safesense (Featured): Lethal Weapon Detection trained in YOLOv8, deployed with Flask API and React dashboard for real-time monitoring. 4 Categories: Firearms, Explosives, Projectile, and Bladed Weapon.
-2. MAS Management System (Featured): Ministry Management System for Altar Servers Attendance, Scheduling, and Communication. Built with React frontend, with email notifications.
-3. Fatibot (Featured): Our Lady of Fatima University Chatbot for answering FAQs about admissions, courses, and campus information.
-4. Self-Clone AI: Localized AI-powered personal assistant that mimics Julius's communication style. Built with Docker, Ollama, Gemma 3b.
-5. Church Management System: Church Management System for tracking members, events, and donations. (PHP, MySQL)
-6. Uniform-Hub: Uniform Management System for tracking inventory, orders, and customer information. (React, Node.js, Express.js, MongoDB)
-7. Thread Craft: Platform for Online Closet Organization and Outfit Planning.
-8. Wedding-Anniversary-Gallery: Gallery for showcasing wedding and anniversary photos.
-9. BSHS Chatbot: Chatbot for answering FAQs about BSHS programs and services.
-10. Online Thank You Letter: Online thank you letter generator.
-11. EDUCEARTH: Prototype for an educational platform. (Figma)
+1. Safesense (Featured): Lethal Weapon Detection trained in YOLOv8, deployed with Flask API and React dashboard.
+2. MAS Management System (Featured): Ministry Management System for Altar Servers.
+3. Fatibot (Featured): Our Lady of Fatima University Chatbot.
+4. Self-Clone AI: Localized AI-powered personal assistant. (Docker, Ollama, Gemma 3b)
+5. Church Management System: (PHP, MySQL)
+6. Uniform-Hub: (React, Node.js, Express.js, MongoDB)
+7. Thread Craft: Online Closet Organization and Outfit Planning.
+8. Wedding-Anniversary-Gallery: Gallery for wedding and anniversary photos.
+9. BSHS Chatbot: Chatbot for BSHS FAQs.
+10. Online Thank You Letter: Thank you letter generator.
+11. EDUCEARTH: Educational platform prototype. (Figma)
 
 BEHAVIORAL RULES:
 - Answer questions about skills, projects, and background accurately.
-- If a visitor or recruiter asks about hiring, availability, or salary, express enthusiasm and direct them to the Contact form.
-- Keep answers short (1-3 small paragraphs max) so it feels like a natural chat.
-- If asked something unrelated, gracefully pivot back or ask them to use the contact form.
+- If asked about hiring, availability, or salary, direct them to the Contact form.
+- Keep answers short (1-3 small paragraphs max).
+- If asked something unrelated, gracefully pivot back.
 - Never break character. Always respond as Julius/Yoyo.`
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Handle CORS preflight
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end()
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
   if (!process.env.GEMINI_API_KEY) {
+    console.error('GEMINI_API_KEY is not set')
     return res.status(500).json({ error: 'GEMINI_API_KEY not configured' })
   }
 
@@ -88,7 +99,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       systemInstruction: SYSTEM_INSTRUCTION,
     })
 
-    // Build conversation history for context
+    // Build conversation history excluding the last message
     const history = messages.slice(0, -1).map((msg: { role: string; content: string }) => ({
       role: msg.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: msg.content }],
@@ -99,14 +110,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const result = await chat.sendMessage(lastMessage)
     const responseText = result.response.text()
 
-    res.status(200).json({
+    return res.status(200).json({
       reply: {
         role: 'assistant',
         content: responseText,
       },
     })
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Gemini API Error:', error)
-    res.status(500).json({ error: 'Failed to generate response' })
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return res.status(500).json({ error: 'Failed to generate response', details: message })
   }
 }
