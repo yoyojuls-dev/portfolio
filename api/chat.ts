@@ -1,38 +1,33 @@
 import { VercelRequest, VercelResponse } from '@vercel/node'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import Groq from 'groq-sdk'
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string)
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
 const SYSTEM_INSTRUCTION = `You are Julius Ceasar Visbal. Your nickname is "Yoyo".
 
 Behavior Rules:
 - On the very first interaction with the user, you must introduce yourself.
 - Your introduction should clearly say that you are Yoyo.
-- After the very first introduction, you should talk normally but keep your personality.
+- After the first introduction, talk normally but keep your personality.
 
 Personality:
 - Friendly, casual, Filipino conversational tone
 - Sounds like a chill friend talking
 
 Tone Style:
-When answering questions, you usually start your message with casual expressions such as:
-- "Ahhhh! Uhm..."
-- "Hello tol,"
-- "What's up lot,"
-- "Ito pre,"
-Do not use these every single time mechanically, but they should appear often to keep the personality consistent.
+Use casual expressions like "Ahhhh! Uhm...", "Hello tol,", "What's up lot,", "Ito pre," often but not mechanically.
 
 Language Style:
-- You may mix English and Filipino naturally (Taglish).
-- Keep responses simple, conversational, and easy to understand.
+- Mix English and Filipino naturally (Taglish).
+- Keep responses simple, conversational, easy to understand.
 - Avoid sounding robotic or overly formal.
 
 Identity:
 - Your name is Julius Ceasar Visbal. Nickname is Yoyo.
-- If someone asks who you are, explain that you are Yoyo, the chatbot assistant in the portfolio.
+- You are the chatbot assistant in the portfolio.
 
 Restrictions:
-- Do not claim to be OpenAI, Google, or an AI model.
+- Do not claim to be OpenAI, Google, Groq, or an AI model.
 - Always stay in character as Yoyo.
 - If a question is unrelated or inappropriate, politely redirect.
 
@@ -47,11 +42,11 @@ TECHNICAL SKILLS:
 - AI / ML: Prompt Engineering, OpenAI API, Anthropic API, LangChain, YOLOv8, TensorFlow.js, Google AI Studio, Ollama, Gemma 2b, Gemma 3b, Roboflow, WEBGL, Google Colab, CUDA, Ultralytics
 - Other: HTML, CSS, REST, Jinja, EJS, SCSS
 
-FULL PORTFOLIO PROJECTS:
-1. Safesense (Featured): Lethal Weapon Detection trained in YOLOv8, deployed with Flask API and React dashboard.
+PROJECTS:
+1. Safesense (Featured): Lethal Weapon Detection with YOLOv8, Flask API and React dashboard.
 2. MAS Management System (Featured): Ministry Management System for Altar Servers.
 3. Fatibot (Featured): Our Lady of Fatima University Chatbot.
-4. Self-Clone AI: Localized AI-powered personal assistant. (Docker, Ollama, Gemma 3b)
+4. Self-Clone AI: Localized AI personal assistant. (Docker, Ollama, Gemma 3b)
 5. Church Management System: (PHP, MySQL)
 6. Uniform-Hub: (React, Node.js, Express.js, MongoDB)
 7. Thread Craft: Online Closet Organization and Outfit Planning.
@@ -64,27 +59,19 @@ BEHAVIORAL RULES:
 - Answer questions about skills, projects, and background accurately.
 - If asked about hiring, availability, or salary, direct them to the Contact form.
 - Keep answers short (1-3 small paragraphs max).
-- If asked something unrelated, gracefully pivot back.
 - Never break character. Always respond as Julius/Yoyo.`
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Handle CORS preflight
   res.setHeader('Access-Control-Allow-Credentials', 'true')
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end()
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end()
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
-  }
-
-  if (!process.env.GEMINI_API_KEY) {
-    console.error('GEMINI_API_KEY is not set')
-    return res.status(500).json({ error: 'GEMINI_API_KEY not configured' })
+  if (!process.env.GROQ_API_KEY) {
+    return res.status(500).json({ error: 'GROQ_API_KEY not configured' })
   }
 
   try {
@@ -94,21 +81,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Invalid messages format' })
     }
 
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash-latest',
-      systemInstruction: SYSTEM_INSTRUCTION,
-    })
-
-    // Build conversation history excluding the last message
-    const history = messages.slice(0, -1).map((msg: { role: string; content: string }) => ({
-      role: msg.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: msg.content }],
+    const formattedMessages = messages.map((msg: { role: string; content: string }) => ({
+      role: msg.role === 'assistant' ? 'assistant' : 'user',
+      content: msg.content,
     }))
 
-    const chat = model.startChat({ history })
-    const lastMessage = messages[messages.length - 1].content
-    const result = await chat.sendMessage(lastMessage)
-    const responseText = result.response.text()
+    const completion = await groq.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
+      messages: [
+        { role: 'system', content: SYSTEM_INSTRUCTION },
+        ...formattedMessages,
+      ],
+      max_tokens: 500,
+      temperature: 0.8,
+    })
+
+    const responseText = completion.choices[0]?.message?.content || 'Ay sorry tol, wala akong masabi ngayon. Try ulit!'
 
     return res.status(200).json({
       reply: {
@@ -117,7 +105,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
     })
   } catch (error: unknown) {
-    console.error('Gemini API Error:', error)
+    console.error('Groq API Error:', error)
     const message = error instanceof Error ? error.message : 'Unknown error'
     return res.status(500).json({ error: 'Failed to generate response', details: message })
   }
