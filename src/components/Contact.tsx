@@ -85,8 +85,8 @@ export default function Contact() {
                   <MessageSquare size={18} className="text-cyan-400" />
                 </div>
                 <div>
-                  <div className="font-mono text-xs text-muted mb-0.5">Discord</div>
-                  <span className="font-mono text-sm text-text">Cerius #cerius29</span>
+                  <div className="font-mono text-xs text-muted mb-0.5">Mobile Number</div>
+                  <span className="font-mono text-sm text-text">+63 991 946 7527</span>
                 </div>
               </div>
             </div>
