@@ -9,6 +9,8 @@ import Contact from './components/Contact'
 import Footer from './components/Footer'
 import CustomCursor from './components/CustomCursor'
 import Loader from './components/Loader'
+// 1. ADD THIS IMPORT LINE:
+import Chatbot from './components/Chatbot' 
 
 function App() {
   const [loading, setLoading] = useState(true)
@@ -39,6 +41,10 @@ function App() {
         </main>
 
         <Footer />
+        
+        {/* 2. ADD YOUR CHATBOT COMPONENT HERE */}
+        <Chatbot />
+        
       </div>
     </BrowserRouter>
   )
